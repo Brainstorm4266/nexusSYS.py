@@ -27,7 +27,7 @@ def init():
     def search():
         h = request.args.get('query')
         print(h)
-        return "<p>Coming soon, mate! Your search query is: "+h+"."
+        return send_file('./html/search.html')
     @app.route("/about")
     def about():
         return send_file("./html/about.html")
