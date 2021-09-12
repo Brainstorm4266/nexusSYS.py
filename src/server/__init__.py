@@ -1,3 +1,4 @@
+from array import array
 import asyncio
 import json
 import os
@@ -7,7 +8,22 @@ import urllib3
 from bs4 import BeautifulSoup
 from flask import Flask, redirect, request, send_file
 
-
+def parse(data):
+    if isinstance(data, dict):
+        return data
+    elif isinstance(data, str):
+        try:
+            return json.loads(data)
+        except:
+            return str(data)
+    elif isinstance(data, array):
+        return data
+    elif isinstance(data, int):
+        return int(data)
+    elif isinstance(data, float):
+        return float(data)
+    else:
+        return data
 def init():
     print('[SERVER]: Initializing sqlite storage system...')
     app = Flask(__name__)
@@ -60,5 +76,98 @@ def init():
             chapter = chapters.fetchall()[int(h2)]
             print(chapter)
             lol = chapter[3]
-            return str(lol) # I'll switch it out so it would return a post webpage template, and that would get the chapter from API.
+            return send_file("./post.html") # I'll switch it out so it would return a post webpage template, and that would get the chapter from API.
+    @app.route("/api/get_post")
+    def post_api():
+        h = request.args.get('post')
+        print("[nexusSYS]: API REQUEST: /api/get_post")
+        connecc = sqlite3.connect("main_data.db")
+        curs = connecc.cursor()
+        print(request.get_data())
+        if h == None:
+            return "Invalid request.", 400
+        else:
+            if True: # Do I look like I want to unindent all of this right now?
+                data = h
+                if h == None:
+                    return "Invalid request.", 400
+                else:
+                    def get_user(id):
+                        user = curs.execute('SELECT * FROM "users"').fetchall()[int(id)]
+                        return {
+                            "id": parse(user[0]),
+                            "name": parse(user[1])
+                        }
+                    def get_chapters():
+                        chaps = json.loads(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][4])
+                        table = []
+                        for chap in chaps:
+                            table.append({
+                                "id": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][0]),
+                                "private": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][1]),
+                                "author": parse(get_user(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][2])),
+                                "text": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][3]),
+                                "notes": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][4]),
+                                "note_top": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][5]),
+                                "note_bottom": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][6]),
+                                "post": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][7]),
+                                "name": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][8])
+                            })
+                        return table
+                    return {
+                        "id": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][0]),
+                        "name": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][1]),
+                        "author": parse(get_user(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][2])),
+                        "chapters_amount": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][3]),
+                        "chapters": get_chapters(),
+                        "private": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][5]),
+                        "description": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][6])
+                    }
+    @app.route("/api/get_chapter")
+    def chapter_api():
+        h = request.args.get('chapter')
+        print("[nexusSYS]: API REQUEST: /api/get_chapter")
+        connecc = sqlite3.connect("main_data.db")
+        curs = connecc.cursor()
+        print(request.get_data())
+        if h == None:
+            return "Invalid request.", 400
+        else:
+            if True: # Do I look like I want to unindent all of this right now?
+                data = h
+                if h == None:
+                    return "Invalid request.", 400
+                else:
+                    def get_user(id):
+                        user = curs.execute('SELECT * FROM "users"').fetchall()[int(id)]
+                        return {
+                            "id": parse(user[0]),
+                            "name": parse(user[1])
+                        }
+                    def get_post():
+                        table = {
+                            "id": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][0]),
+                            "name": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][1]),
+                            "author": parse(get_user(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][2])),
+                            "chapters_amount": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][3]),
+                            "chapters": parse(json.loads(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][4])),
+                            "private": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][5]),
+                            "description": parse(curs.execute('SELECT * FROM "posts"').fetchall()[int(h)][6])
+                        }
+                        return table
+                    return {
+                        "id": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][0]),
+                        "private": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][1]),
+                        "author": parse(get_user(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][2])),
+                        "text": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][3]),
+                        "notes": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][4]),
+                        "note_top": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][5]),
+                        "note_bottom": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][6]),
+                        "post": get_post(),
+                        "name": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][8])
+                    }
+    @app.route("/post.js")
+    def get_post_js():
+        return send_file('./html/post.js')
     asyncio.run(app.run())
+    print("[nexusSYS]: APP STARTED.")
