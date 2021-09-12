@@ -54,7 +54,7 @@ def init():
             soup.find('a', {"id":"login"}).findChild("p").replace_with("Log In&nbsp;&nbsp;")
             soup.find('a', {"id":"signup"}).findChild("p").replace_with("Sign Up&nbsp;")
             soup.find('meta', {"id":"redir"}).replace_with(BeautifulSoup("<meta http-equiv='refresh' content='0.1; URL=/post?post="+str(h)+"&chapter="+str(chapterid)+"' />", "html.parser"))
-            return soup.prettify("utf-8") # //TODO: Fix redirect page not displaying correctly!
+            return soup.prettify("utf-8") # //TODO: Fix redirect page visual issues caused by bs4.
         else:
             chapters = curs.execute('SELECT * FROM "chapters"')
             chapter = chapters.fetchall()[int(h2)]
