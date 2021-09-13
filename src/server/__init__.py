@@ -1,12 +1,27 @@
-from array import array
 import asyncio
+from base64 import encode
+import hashlib
 import json
 import os
 import sqlite3
+from array import array
 
 import urllib3
 from bs4 import BeautifulSoup
 from flask import Flask, redirect, request, send_file
+
+
+def hash_pass(password):
+    return hashlib.md5(str(password).encode('utf-8')).hexdigest()
+
+def compare_hashes(userhash, passhash):
+    if userhash == passhash:
+        return True
+    else:
+        return False
+
+def check_hash(userpass, passhash):
+    return compare_hashes(hashlib.md5(str(userpass).encode('utf-8')).hexdigest(), passhash)
 
 def parse(data):
     if isinstance(data, dict):
