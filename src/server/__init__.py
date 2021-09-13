@@ -111,7 +111,8 @@ def init():
                                 "note_top": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][5]),
                                 "note_bottom": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][6]),
                                 "post": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][7]),
-                                "name": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][8])
+                                "name": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][8]),
+                                "chapter_num":parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(chap)][9])
                             })
                         return table
                     return {
@@ -164,7 +165,8 @@ def init():
                         "note_top": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][5]),
                         "note_bottom": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][6]),
                         "post": get_post(),
-                        "name": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][8])
+                        "name": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][8]),
+                        "chapter_num": parse(curs.execute('SELECT * FROM "chapters"').fetchall()[int(h)][9])
                     }
     @app.route("/post.js")
     def get_post_js():
