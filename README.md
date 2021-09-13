@@ -4,5 +4,5 @@ Open source website for transformative works, inspired by Archive Of Our Own.
 
 # Setup
 
-First, clone this repository and run <code>pip install -U -r requirements.txt</code>, then run <code>python3 src/__main__.py</code>
+First, clone this repository and run <code>pip install -U -r requirements.txt</code>, then run ```python3 src/__main__.py```
 Also, set up a database.
