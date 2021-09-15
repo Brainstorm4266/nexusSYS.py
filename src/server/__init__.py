@@ -5,12 +5,9 @@ import os
 import sqlite3
 import uuid
 from array import array
-from base64 import encode
 
-import OpenSSL
-import urllib3
 from bs4 import BeautifulSoup
-from flask import Flask, redirect, request, send_file
+from flask import Flask, request, send_file
 
 
 def create_session_id():
