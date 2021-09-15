@@ -1,15 +1,20 @@
 import asyncio
-from base64 import encode
 import hashlib
 import json
 import os
 import sqlite3
+import uuid
 from array import array
+from base64 import encode
 
+import OpenSSL
 import urllib3
 from bs4 import BeautifulSoup
 from flask import Flask, redirect, request, send_file
 
+
+def create_session_id():
+    return uuid.UUID(bytes = os.urandom(16))
 
 def hash_pass(password):
     return hashlib.md5(str(password).encode('utf-8')).hexdigest()
@@ -186,5 +191,20 @@ def init():
     @app.route("/post.js")
     def get_post_js():
         return send_file('./html/post.js')
+    @app.route('/api/create_user', methods = ['POST'])
+    def create_user():
+        connecc = sqlite3.connect("main_data.db")
+        curs = connecc.cursor()
+        print("CREATE USER REQUEST RECIEVED.")
+        json_object = json.loads(request.data)
+        session_id = create_session_id()
+        curs.execute("INSERT INTO \"users\" (name, password_hash, valid_sessions) VALUES (\""+str(json_object["name"])+"\", \""+str(json_object["password_hash"])+"\", \"[\""+str(session_id)+"\"]\")")
+        connecc.commit()
+        return {
+            "success": True,
+            "name": str(json_object["name"]),
+            "password_hash": str(json_object["password_hash"]),
+            "session_id": str(session_id)
+        }
     asyncio.run(app.run())
     print("[nexusSYS]: APP STARTED.")
