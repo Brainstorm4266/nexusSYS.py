@@ -203,5 +203,14 @@ def init():
             "password_hash": str(json_object["password_hash"]),
             "session_id": str(session_id)
         }
+    @app.route("/api/get_all_communities")
+    def get_all_communities():
+        connecc = sqlite3.connect("main_data.db")
+        curs = connecc.cursor()
+        print('[nexusSYS]: GET COMMUNITIES REQUEST RECIEVED.')
+        #arr = []
+        #for community in curs.execute("SELECT * FROM \"communities\"").fetchall():
+        #    arr.append(community)
+        return {"communities": curs.execute("SELECT * FROM \"communities\"").fetchall()}
     asyncio.run(app.run())
     print("[nexusSYS]: APP STARTED.")
