@@ -14,7 +14,7 @@ def create_session_id():
     return uuid.UUID(bytes = os.urandom(16))
 
 def hash_pass(password):
-    return hashlib.md5(str(password).encode('utf-8')).hexdigest()
+    return hashlib.md5(str(password).encode('utf-8')).hexdigest() 
 
 def compare_hashes(userhash, passhash):
     if userhash == passhash:
